@@ -1,0 +1,29 @@
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+th {
+    text-align: center;
+}
+
+input {
+  border: none;
+  width: 24ch;
+  background: 
+    repeating-linear-gradient(90deg, 
+        dimgrey 0, 
+        dimgrey 1ch, 
+        transparent 0, 
+        transparent 1.5ch) 
+      0 100%/100% 2px no-repeat;
+  color: dimgrey;
+  font: 2ch consolas, monospace;
+  letter-spacing: .5ch;
+}
+input:focus {
+  outline: none;
+  color: dodgerblue;
+}
+

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link rel="manifest" href="manifest.json">
+      <link rel="icon" href="logo.png">
+      <link rel="stylesheet" type="text/css" href="styles.css">
+    <meta charset="UTF-8">
+    <title>MIPS SIM</title>
+  </head>
+  <body>
+  <table style="width:100%">
+    <caption>Memory</caption>
+  <tr>
+    <th>Address</th>
+    <th>Word 1 (+0)</th>
+    <th>Word 2 (+4)</th> 
+  </tr>
+  <tr><td>0</td></tr>
+  <tr><td>1</td></tr>
+  <tr><td>2</td></tr>
+  <tr><td>3</td></tr>
+    
+</table> 
+    <table style="width:100%">
+    <caption>Registers</caption>
+  <tr>
+    <th>Register</th>
+    <th>Opcode</th>
+    <th>I</th> 
+    <th>IX</th>
+    <th>R</th>
+    <th>Address</th>
+  </tr>
+  <tr><td>R0</td></tr>
+  <tr><td>R1</td></tr>
+  <tr><td>R2</td></tr>
+  <tr><td>R3</td></tr>
+  <tr><td>X0</td></tr>
+  <tr><td>PC</td></tr>
+  <tr><td>IR</td></tr>
+  <tr><td>MAR</td></tr>
+  <tr><td>MBR</td></tr>
+</table>
+ 
+ <br>  
+      <input id="in" onmaxlength='16' autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <br><br>
+            <script src="sim.js"></script>
+      <button onclick="lsw()">LSW</button>
+      
+  </body>
+</html>
