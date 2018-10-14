@@ -1,8 +1,7 @@
-First navigate to the 
+First navigate to the working directory in your terminal
 
 then compile with
-MAC/LINUX - javac -cp jsoup.jar Main.java
-WINDOWS   - 
+javac -cp jsoup.jar Main.java
 
 and run with
 MAX/LINUX - java -cp .:jsoup.jar Main
