@@ -4,9 +4,24 @@ table, th, td {
     text-align: center;
 }
 
-th {
-    text-align: center;
+
+.memtrc {
+    display:block;
+    overflow-y: scroll;
+    height: 400px;
+    width: 100%;
 }
+
+.memt {
+    width : 100%;
+    table-layout : fixed;
+}
+
+.memth {
+    width: 100%;
+    table-layout : fixed;
+}
+
 
 input {
   border: none;
@@ -26,4 +41,3 @@ input:focus {
   outline: none;
   color: dodgerblue;
 }
-
