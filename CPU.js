@@ -10,13 +10,24 @@ var MBR = '0000000000000000';
 
 //IR Fetch
 function fetch() {
-    readData(PC.substring(5));
+    addressBus = PC;
+    readData();
     IR = dataBus;
 }
 
 //IR DECODE - REG FETCH
 function signExtend(bstr) {
     return ('0'.repeat(16 - bstr.length) + bstr.toString(2));
+}
+
+//STEP
+function cycle(i){
+    if(i > 31) return;
+    fetch();
+    decode();
+    uPC();
+    updateRegisters();
+    setTimeout(cycle(++i), 10000);
 }
 
 function decode() {
@@ -46,7 +57,6 @@ function LDR(IX, I, R, Address) {
             MBR = readData();
         }
     }
-    
     readData();
     loadGPR(R);
 }
@@ -62,13 +72,7 @@ function loadGPR(R) {
 
 //Update PC;
 function uPC() {
-    if (PC === '0000000000011111') {
-        PC = '0000000000000000';
-    } else {
-        PC = add(PC, '0000000000000001');
-        instruction = regFile.rows[6].cells[1];
-    }
-    instruction.innerHTML = PC;
+    PC = add(PC, '0000000000000001');
 }
 
 function add(str1, str2) {

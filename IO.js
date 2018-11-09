@@ -13,7 +13,9 @@ var input = document.getElementsByClassName('in')[0];
         var cell2 = row.insertCell(2);
         cell0.innerHTML = i;
         cell1.innerHTML = ('0'.repeat(11 - (+i).toString(2).length) + (+i).toString(2));
-        cell2.innerHTML = "0000000000000000";
+        addressBus = ('0'.repeat(16 - (+i).toString(2).length) + (+i).toString(2));
+        readData();
+        cell2.innerHTML = dataBus; 
     }
 })();
 
@@ -33,12 +35,4 @@ function updateRegisters() {
     regFile.rows[8].cells[1].innerHTML = MAR;  
     //MBR
     regFile.rows[9].cells[1].innerHTML = MBR;
-}
-
-function loadInstruction() {
-    dataBus = input.value;
-    addressBus = pcPointer;
-    writeData();
-    memTable.rows[parseInt(pcPointer, 2)].cells[2].innerHTML = dataBus;
-    nextPC();
 }
