@@ -7,6 +7,9 @@ var PC  = '0000000000000000';
 var IR  = '0000000000000000';
 var MAR = '0000000000000000';
 var MBR = '0000000000000000';
+var ZF  = '';
+var CF  = '';
+var SF  = '';
 
 //IR Fetch
 function fetch() {
@@ -28,28 +31,31 @@ function cycle(i) {
 
 function decode() {
     var opcode = IR.substring(0, 6);
-    var I = IR.substring(6, 7);
-    var IX = IR.substring(7, 8);
+    var I = IR[6];
+    var IX = IR[7];
     var R = IR.substring(8, 10);
     var Address = IR.substring(10, 16);
     if (opcode === '000001') {
         LDR(IX, I, R, Address);
     } else if (opcode === '000010') {
         STR(IX, I, R, Address);
-    } else if (opcode === "101001") {
+    } else if (opcode === '010001') {
+        CMP(IX, I, R, Address);
+    } else if (opcode === '101001') {
         LDX(IX, I, Address);
-    } else if (opcode === "101010") {
+    } else if (opcode === '101010') {
         STX(IX, I, Address);
     }
 }
 
-//Execute
+//Effective Address
 function getEA(IX, I, Address) {
     if (IX === '0') {
+        console.log("HELLO");
         MAR = signExtend(Address);
         addressBus = MAR;
     } else if (IX === '1') {
-        MAR  = add(signExtend(Address), X0);
+        MAR = add(signExtend(Address), X0);
         addressBus =  MAR;
     }
 
@@ -58,6 +64,25 @@ function getEA(IX, I, Address) {
         MAR = dataBus;
         addressBus = MAR;
     }
+}
+
+function CMP(IX, I, R, Address) {
+    ZF  = '1';
+    CF  = '0';
+    SF  = '0';
+    getEA();
+    readData();
+    MBR = dataBus;
+    R = regRef(R);
+    for (var i = 15; i >= 0; i--) {
+        if(ZF === '1')
+        ZF = ~ (MBR[i] ^ R[i]);
+        if(CF === '0')
+        CF = (MBR[i] | R[i]) & ~R[i];
+    }
+    SF = CF;
+    console.log(R);
+    console.log(ZF, CF, SF);
 }
 
 function LDX(IX, I, Address) {
@@ -89,8 +114,16 @@ function signExtend(bstr) {
 }
 
 //Register access
+        
+function regRef(R) {
+    if (R === '00') R = R0;
+    else if (R === '01') R = R1;
+    else if (R === '10') R = R2;
+    else if (R === '11') R = R3;
+    return R;
+}
 
-function storeGRP(R) {
+function storeGPR(R) {
     if (R === '00') dataBus = R0;
     else if (R === '01') dataBus = R1;
     else if (R === '10') dataBus = R2;
@@ -109,6 +142,7 @@ function uPC() {
     PC = add(PC, '0000000000000001');
 }
 
+//Binary add
 function add(str1, str2) {
     var result = '';
     var carry = 0;
