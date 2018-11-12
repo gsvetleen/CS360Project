@@ -2,7 +2,7 @@ var R0 = '0000000000000000';
 var R1 = '0000000000000000';
 var R2 = '0000000000000000';
 var R3 = '0000000000000000';
-var X0 = '0000000000111111';
+var X0 = '0000011111100000';
 var PC = '0000000000000000';
 var IR = '0000000000000000';
 var MAR = '0000000000000000';
@@ -21,25 +21,56 @@ function signExtend(bstr) {
 }
 
 //STEP
-function cycle(i){
-    if(i > 31) return;
+function cycle(i) {
+    if (i > 31) return;
     fetch();
     decode();
     uPC();
     updateRegisters();
-    setTimeout(cycle(++i), 10000);
+    updateMemory();
+    setTimeout(cycle, 1000, ++i);
 }
 
 function decode() {
     var opcode = IR.substring(0, 6);
+    var I = IR.substring(6, 7);
+    var IX = IR.substring(7, 8);
+    var R = IR.substring(8, 10);
+    var Address = IR.substring(10, 16);
     if (opcode === '000001') {
-        LDR(IR.substring(6, 7), IR.substring(7, 8),
-            IR.substring(8, 10), IR.substring(10, 16));
+        LDR(IX, I, R, Address);
+    } else if (opcode === '000010') {
+        STR(IX, I, R, Address);
     }
 }
 
 //Execute
 function LDR(IX, I, R, Address) {
+    if (IX === '0') {
+        addressBus = signExtend(Address);
+    } else if (IX === '1') {
+        addressBus = add(signExtend(Address), X0);
+    }
+    
+    if (I === '1') {
+        if (IX === '0') {
+            MAR = "0000000000" + Address;
+            addressBus = MAR;
+        } else if (IX == '1') {
+            MAR = add(signExtend(Address), X0);
+            addressBus = MAR;
+        }
+    }
+    readData();
+    loadGPR(R);
+}
+
+function STR(IX, I, R, Address) {
+    if (R === '00') dataBus = R0;
+    else if (R === '01') dataBus = R1;
+    else if (R === '10') dataBus = R2;
+    else if (R === '11') dataBus = R3;
+
     if (IX === '0') {
         addressBus = '0000000000' + Address;
     } else if (IX === '1') {
@@ -57,8 +88,7 @@ function LDR(IX, I, R, Address) {
             MBR = readData();
         }
     }
-    readData();
-    loadGPR(R);
+    writeData();
 }
 
 //Memory access

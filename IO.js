@@ -19,6 +19,20 @@ var input = document.getElementsByClassName('in')[0];
     }
 })();
 
+function updateMemory() {
+    for(var i = 0; i < 2048; i++){
+		var row = memTable.rows[i];
+        var cell0 = row.cells[0];
+        var cell1 = row.cells[1];
+        var cell2 = row.cells[2];
+        cell0.innerHTML = i;
+        cell1.innerHTML = ('0'.repeat(11 - (+i).toString(2).length) + (+i).toString(2));
+        addressBus = ('0'.repeat(16 - (+i).toString(2).length) + (+i).toString(2));
+        readData();
+        cell2.innerHTML = dataBus; 
+    }
+}
+
 function updateRegisters() {
     //GRPS
     regFile.rows[1].cells[1].innerHTML = R0;
