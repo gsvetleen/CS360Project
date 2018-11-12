@@ -36,11 +36,15 @@ function decode() {
         LDR(IX, I, R, Address);
     } else if (opcode === '000010') {
         STR(IX, I, R, Address);
+    } else if (opcode === "101001") {
+        LDX(R);
+    } else if (opcode === "101010") {
+        STX(IX, I, R, Address);
     }
 }
 
 //Execute
-function LDR(IX, I, R, Address) {
+function getEA() {
     if (IX === '0') {
         MAR = signExtend(Address);
         addressBus = MAR;
@@ -54,24 +58,28 @@ function LDR(IX, I, R, Address) {
         MAR = dataBus;
         addressBus = MAR;
     }
+}
+
+function LDX(IX, I, R, Address) {
+	getEA();
+    readData();
+    X0 = dataBus;
+}
+
+function STX(IX, I , R, Address) {
+	getEA();
+    dataBus = X0;
+    writeData();
+}
+
+function LDR(IX, I, R, Address) {
+    getEA();
     readData();
     loadGPR(R);
 }
 
 function STR(IX, I, R, Address) {
-    if (IX === '0') {
-        MAR = signExtend(Address);
-        addressBus = MAR;
-    } else if (IX === '1') {
-        MAR  = add(signExtend(Address), X0);
-        addressBus =  MAR;
-    }
-
-    if (I === '1') {
-        readData();
-        MAR = dataBus;
-        addressBus = MAR;
-    }
+    getEA();
     storeGPR(R);
     writeData();
 }
