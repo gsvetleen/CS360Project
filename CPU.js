@@ -1,10 +1,10 @@
-var R0 = '0000000000000000';
-var R1 = '0000000000000000';
-var R2 = '0000000000000000';
-var R3 = '0000000000000000';
-var X0 = '0000011111100000';
-var PC = '0000000000000000';
-var IR = '0000000000000000';
+var R0  = '0000000000000000';
+var R1  = '0000000000000000';
+var R2  = '0000000000000000';
+var R3  = '0000000000000000';
+var X0  = '0000011111100000';
+var PC  = '0000000000000000';
+var IR  = '0000000000000000';
 var MAR = '0000000000000000';
 var MBR = '0000000000000000';
 
@@ -13,11 +13,6 @@ function fetch() {
     addressBus = PC;
     readData();
     IR = dataBus;
-}
-
-//IR DECODE - REG FETCH
-function signExtend(bstr) {
-    return ('0'.repeat(16 - bstr.length) + bstr.toString(2));
 }
 
 //STEP
@@ -47,51 +42,52 @@ function decode() {
 //Execute
 function LDR(IX, I, R, Address) {
     if (IX === '0') {
-        addressBus = signExtend(Address);
+        MAR = signExtend(Address);
+        addressBus = MAR;
     } else if (IX === '1') {
-        addressBus = add(signExtend(Address), X0);
+        MAR  = add(signExtend(Address), X0);
+        addressBus =  MAR;
     }
-    
+
     if (I === '1') {
-        if (IX === '0') {
-            MAR = "0000000000" + Address;
-            addressBus = MAR;
-        } else if (IX == '1') {
-            MAR = add(signExtend(Address), X0);
-            addressBus = MAR;
-        }
+        readData();
+        MAR = dataBus;
+        addressBus = MAR;
     }
     readData();
     loadGPR(R);
 }
 
 function STR(IX, I, R, Address) {
+    if (IX === '0') {
+        MAR = signExtend(Address);
+        addressBus = MAR;
+    } else if (IX === '1') {
+        MAR  = add(signExtend(Address), X0);
+        addressBus =  MAR;
+    }
+
+    if (I === '1') {
+        readData();
+        MAR = dataBus;
+        addressBus = MAR;
+    }
+    storeGPR(R);
+    writeData();
+}
+
+function signExtend(bstr) {
+    return ('0'.repeat(16 - bstr.length) + bstr.toString(2));
+}
+
+//Register access
+
+function storeGRP(R) {
     if (R === '00') dataBus = R0;
     else if (R === '01') dataBus = R1;
     else if (R === '10') dataBus = R2;
     else if (R === '11') dataBus = R3;
-
-    if (IX === '0') {
-        addressBus = '0000000000' + Address;
-    } else if (IX === '1') {
-        addressBus = add('0000' + Address + '000000', X0);
-    }
-
-    if (I === '1') {
-        if (IX === '0') {
-            MAR = "0000000000" + Address;
-            addressBus = MAR;
-            MBR = readData();
-        } else if (IX == '1') {
-            MAR = add('0000' + Address + '000000', X0);
-            addressBus = MAR;
-            MBR = readData();
-        }
-    }
-    writeData();
 }
-
-//Memory access
 
 function loadGPR(R) {
     if (R === '00') R0 = dataBus;
@@ -108,7 +104,6 @@ function uPC() {
 function add(str1, str2) {
     var result = '';
     var carry = 0;
-
     for (var i = 15; i >= 0; i--) {
         var b1 = str1[i];
         var b2 = str2[i];
@@ -116,9 +111,7 @@ function add(str1, str2) {
         result = sum + result;
         carry = (b1 & b2) | (b2 & carry) | (b1 & carry) + '';
     }
-
     if (carry)
         result = '0000000000000000';
-
     return result;
 }
