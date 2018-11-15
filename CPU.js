@@ -1,15 +1,16 @@
-var R0  = '0000000000000000';
-var R1  = '0000000000000000';
-var R2  = '0000000000000000';
-var R3  = '0000000000000000';
-var X0  = '0000011111100000';
-var PC  = '0000000000000000';
-var IR  = '0000000000000000';
+var R0 = '0000000000000000';
+var R1 = '0000000000000000';
+var R2 = '0000000000000000';
+var R3 = '0000000000000000';
+var X0 = '0000011111000000';
+var PC = '0000000000000000';
+var IR = '0000000000000000';
 var MAR = '0000000000000000';
 var MBR = '0000000000000000';
-var ZF  = '';
-var CF  = '';
-var SF  = '';
+var ZF;
+var CF;
+var SF;
+var pci;
 
 //IR Fetch
 function fetch() {
@@ -19,14 +20,22 @@ function fetch() {
 }
 
 //STEP
-function cycle(i) {
-    if (i > 31) return;
+function cycle() {
+    if (pci > 31) return;
     fetch();
     decode();
-    uPC();
     updateRegisters();
     updateMemory();
-    setTimeout(cycle, 1000, ++i);
+    pci++;
+    setTimeout(cycle, 500);
+}
+
+function step() {
+    if (pci > 31) return;
+    fetch();
+    decode();
+    updateRegisters();
+    updateMemory();
 }
 
 function decode() {
@@ -34,79 +43,190 @@ function decode() {
     var I = IR[6];
     var IX = IR[7];
     var R = IR.substring(8, 10);
-    var Address = IR.substring(10, 16);
+    var Address = IR.substring(10);
     if (opcode === '000001') {
-        LDR(IX, I, R, Address);
+        LDR(I, IX, R, Address);
+        uPC();
     } else if (opcode === '000010') {
-        STR(IX, I, R, Address);
+        STR(I, IX, R, Address);
+        uPC();
     } else if (opcode === '010001') {
-        CMP(IX, I, R, Address);
+        CMP(I, IX, R, Address);
+        uPC();
     } else if (opcode === '101001') {
-        LDX(IX, I, Address);
+        LDX(I, IX, Address);
+        uPC();
     } else if (opcode === '101010') {
-        STX(IX, I, Address);
+        STX(I, IX, Address);
+        uPC();
+    } else if (opcode == "001010") {
+        JE(I, IX, Address);
+    } else if (opcode == "001011") {
+        JNE(I, IX, Address);
+    } else if (opcode == "001100") {
+        JG(I, IX, Address);
+    } else if (opcode == "001110") {
+        JGE(I, IX, Address);
+    } else if (opcode == "001111") {
+        JL(I, IX, Address);
+    } else if (opcode == "010000") {
+        JLE(I, IX, Address);
+    } else if (opcode == "001101") {
+        JUMP(I, IX, Address);
     }
 }
 
-//Effective Address
-function getEA(IX, I, Address) {
-    if (IX === '0') {
-        console.log("HELLO");
-        MAR = signExtend(Address);
-        addressBus = MAR;
-    } else if (IX === '1') {
-        MAR = add(signExtend(Address), X0);
-        addressBus =  MAR;
-    }
-
-    if (I === '1') {
-        readData();
-        MAR = dataBus;
-        addressBus = MAR;
-    }
-}
-
-function CMP(IX, I, R, Address) {
-    ZF  = '1';
-    CF  = '0';
-    SF  = '0';
-    getEA();
-    readData();
-    MBR = dataBus;
-    R = regRef(R);
+function DEC(R) {
     for (var i = 15; i >= 0; i--) {
-        if(ZF === '1')
-        ZF = ~ (MBR[i] ^ R[i]);
-        if(CF === '0')
-        CF = (MBR[i] | R[i]) & ~R[i];
+        if (R[i] === '1') {
+            R[i] = '0';
+            break;
+        } else if (R[i] === '0') {
+            R[i] = '1';
+        }
     }
-    SF = CF;
-    console.log(R);
-    console.log(ZF, CF, SF);
 }
 
-function LDX(IX, I, Address) {
-	getEA(IX, I, Address);
+function LDX(I, IX, Address) {
+    getEA(I, IX, Address);
     readData();
     X0 = dataBus;
 }
 
-function STX(IX, I, Address) {
-	getEA(IX, I, Address);
+function STX(I, IX, Address) {
+    getEA(I, IX, Address);
     dataBus = X0;
     writeData();
 }
 
-function LDR(IX, I, R, Address) {
-    getEA(IX, I, Address);
+function LDR(I, IX, R, Address) {
+    getEA(I, IX, Address);
     readData();
     loadGPR(R);
 }
 
-function STR(IX, I, R, Address) {
-    getEA(IX, I, Address);
+function STR(I, IX, R, Address) {
+    getEA(I, IX, Address);
     storeGPR(R);
     writeData();
+}
+
+function JE(I, IX, Address) {
+    if (ZF === '1') {
+        getEA(I, IX, Address);
+        readData();
+        PC = dataBus;
+    } else uPC();
+}
+
+function JNE(I, IX, Address) {
+    if (ZF === '0') {
+        getEA(I, IX, Address);
+        readData();
+        PC = dataBus;
+    } else uPC();
+}
+
+function JG(I, IX, Address) {
+    if (ZF === '0' && SF === '0') {
+        getEA(I, IX, Address);
+        readData();
+        PC = dataBus;
+    } else uPC();
+}
+
+function JGE(I, IX, Address) {
+    if (ZF === '1' || SF === '0') {
+        getEA(I, IX, Address);
+        readData();
+        PC = dataBus;
+    } else uPC();
+}
+
+function JL(I, IX, Address) {
+    if (SF === '1') {
+        getEA(I, IX, Address);
+        readData();
+        PC = dataBus;
+    } else uPC();
+}
+
+function JLE(I, IX, Address) {
+    if (ZF === '1' || SF === '1') {
+        getEA(I, IX, Address);
+        readData();
+        PC = dataBus;
+    } else uPC();
+}
+
+function JUMP(I, IX, Address) {
+    getEA(I, IX, Address);
+    readData();
+    PC = dataBus;
+}
+
+//Effective Address
+function getEA(I, IX, Address) {
+    if (I === '1') {
+        addressBus = signExtend(Address);
+        readData();
+        MAR = dataBus;
+    } else MAR = signExtend(Address);
+
+    if (IX === '1') {
+        MAR = add(MAR, X0);
+    }
+    addressBus = MAR;
+}
+
+function CMP(I, IX, R, Address) {
+    ZF = '0';
+    CF = '0';
+    SF = '0';
+    getEA(I, IX, Address);
+    readData();
+    MBR = dataBus;
+    R = regRef(R);
+    for (var i = 15; i >= 0; i--) {
+        ZF = NOT(MBR[i] ^ R[i]) + '';
+        if (ZF == 0) {
+            CF = MBR[i] + '';
+            break;
+        }
+    }
+    SF = CF;
+    console.log(R);
+    console.log(MBR);
+    console.log(ZF, CF, SF);
+}
+
+function LDX(I, IX, Address) {
+    getEA(I, IX, Address);
+    readData();
+    X0 = dataBus;
+}
+
+function STX(I, IX, Address) {
+    getEA(I, IX, Address);
+    dataBus = X0;
+    writeData();
+}
+
+function LDR(I, IX, R, Address) {
+    getEA(I, IX, Address);
+    readData();
+    loadGPR(R);
+}
+
+function STR(I, IX, R, Address) {
+    getEA(I, IX, Address);
+    storeGPR(R);
+    writeData();
+}
+
+function NOT(bit) {
+    if (bit == 0) return '1';
+    else return '0';
 }
 
 function signExtend(bstr) {
@@ -114,7 +234,7 @@ function signExtend(bstr) {
 }
 
 //Register access
-        
+
 function regRef(R) {
     if (R === '00') R = R0;
     else if (R === '01') R = R1;
@@ -156,4 +276,8 @@ function add(str1, str2) {
     if (carry)
         result = '0000000000000000';
     return result;
+}
+
+function sub(str1, str2) {
+
 }
