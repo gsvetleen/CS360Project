@@ -79,11 +79,9 @@ function decode() {
 function DEC(R) {
     for (var i = 15; i >= 0; i--) {
         if (R[i] === '1') {
-            R[i] = '0';
+            R[i] = NOT(R[i]);
             break;
-        } else if (R[i] === '0') {
-            R[i] = '1';
-        }
+        } else R[i] = NOT(R[i]);
     }
 }
 
