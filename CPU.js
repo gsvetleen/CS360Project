@@ -10,7 +10,7 @@ var MBR = '0000000000000000';
 var ZF;
 var CF;
 var SF;
-var pci;
+var pci = 0;
 
 //IR Fetch
 function fetch() {
@@ -21,17 +21,16 @@ function fetch() {
 
 //STEP
 function cycle() {
-    if (pci > 31) return;
+    if(PC === '0000000000011111') return;
     fetch();
     decode();
     updateRegisters();
     updateMemory();
-    pci++;
-    setTimeout(cycle, 500);
+    setTimeout(cycle, 200);
 }
 
 function step() {
-    if (pci > 31) return;
+    if(PC === '0000000000011111') return;
     fetch();
     decode();
     updateRegisters();
@@ -73,16 +72,27 @@ function decode() {
         JLE(I, IX, Address);
     } else if (opcode == "001101") {
         JUMP(I, IX, Address);
-    }
+    } else if (opcode == "001000") {
+        DEC(R);
+        uPC();
+    } else uPC();
 }
 
 function DEC(R) {
+    var tR = regRef(R);
     for (var i = 15; i >= 0; i--) {
-        if (R[i] === '1') {
-            R[i] = NOT(R[i]);
+        if (tR[i] === '1') {
+            tR = replaceAt(tR, i, NOT(tR[i]));
             break;
-        } else R[i] = NOT(R[i]);
+        } else {
+            tR = replaceAt(tR, i, NOT(tR[i]));
+        }
     }
+
+    if (R === '00') R0 = tR;
+    else if (R === '01') R1 = tR;
+    else if (R === '10') R2 = tR;
+    else if (R === '11') R3 = tR;
 }
 
 function LDX(I, IX, Address) {
@@ -185,7 +195,7 @@ function CMP(I, IX, R, Address) {
     readData();
     MBR = dataBus;
     R = regRef(R);
-    for (var i = 15; i >= 0; i--) {
+    for (var i = 0; i < 16; i++) {
         ZF = NOT(MBR[i] ^ R[i]) + '';
         if (ZF == 0) {
             CF = MBR[i] + '';
@@ -193,9 +203,6 @@ function CMP(I, IX, R, Address) {
         }
     }
     SF = CF;
-    console.log(R);
-    console.log(MBR);
-    console.log(ZF, CF, SF);
 }
 
 function LDX(I, IX, Address) {
@@ -223,7 +230,7 @@ function STR(I, IX, R, Address) {
 }
 
 function NOT(bit) {
-    if (bit == 0) return '1';
+    if (bit == '0') return '1';
     else return '0';
 }
 
@@ -278,4 +285,8 @@ function add(str1, str2) {
 
 function sub(str1, str2) {
 
+}
+
+function replaceAt(string, index, replace) {
+  return string.substring(0, index) + replace + string.substring(index + 1);
 }
