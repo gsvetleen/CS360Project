@@ -1,11 +1,9 @@
 var memTable = document.getElementsByClassName('memt')[0];
 var regFile = document.getElementsByClassName('regfile')[0];
-var input = document.getElementsByClassName('in')[0];
 
 //Populate Registers/RAM on Load
 (function(){
 	updateRegisters();
-    
     for(var i = 0; i < 2048; i++){
 		var row = memTable.insertRow(-1);
         var cell0 = row.insertCell(0);
@@ -35,10 +33,10 @@ function updateMemory() {
 
 function updateRegisters() {
     //GRPS
-    regFile.rows[1].cells[1].innerHTML = R0;
-    regFile.rows[2].cells[1].innerHTML = R1;
-    regFile.rows[3].cells[1].innerHTML = R2;
-    regFile.rows[4].cells[1].innerHTML = R3;   
+    regFile.rows[1].cells[1].innerHTML = GPR['00'].value;
+    regFile.rows[2].cells[1].innerHTML = GPR['01'].value;
+    regFile.rows[3].cells[1].innerHTML = GPR['10'].value;
+    regFile.rows[4].cells[1].innerHTML = GPR['11'].value;   
     //INDEX
     regFile.rows[5].cells[1].innerHTML = X0;   
     //PC

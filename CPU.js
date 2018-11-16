@@ -1,16 +1,25 @@
-var R0 = '0000000000000000';
-var R1 = '0000000000000000';
-var R2 = '0000000000000000';
-var R3 = '0000000000000000';
+var GPR = [];
 var X0 = '0000011111000000';
 var PC = '0000000000000000';
 var IR = '0000000000000000';
 var MAR = '0000000000000000';
 var MBR = '0000000000000000';
-var ZF;
-var CF;
-var SF;
-var pci = 0;
+var ZF = '0';
+var CF = '0';
+var SF = '0';
+
+GPR['00'] = {
+    value: '0000000000000000'
+};
+GPR['01'] = {
+    value: '0000000000000000'
+};
+GPR['10'] = {
+    value: '0000000000000000'
+};
+GPR['11'] = {
+    value: '0000000000000000'
+};
 
 //IR Fetch
 function fetch() {
@@ -21,16 +30,16 @@ function fetch() {
 
 //STEP
 function cycle() {
-    if(PC === '0000000000011111') return;
+    if (PC === '0000000000011111') return;
     fetch();
     decode();
     updateRegisters();
     updateMemory();
-    setTimeout(cycle, 200);
+    setTimeout(cycle, 100);
 }
 
 function step() {
-    if(PC === '0000000000011111') return;
+    if (PC === '0000000000011111') return;
     fetch();
     decode();
     updateRegisters();
@@ -72,27 +81,19 @@ function decode() {
         JLE(I, IX, Address);
     } else if (opcode == "001101") {
         JUMP(I, IX, Address);
-    } else if (opcode == "001000") {
+    } else if (opcode == '001000') {
         DEC(R);
         uPC();
     } else uPC();
 }
 
 function DEC(R) {
-    var tR = regRef(R);
     for (var i = 15; i >= 0; i--) {
-        if (tR[i] === '1') {
-            tR = replaceAt(tR, i, NOT(tR[i]));
+        if (GPR[R].value[i] === '1') {
+            GPR[R].value = flipBit(GPR[R].value, i);
             break;
-        } else {
-            tR = replaceAt(tR, i, NOT(tR[i]));
-        }
+        } else GPR[R].value = flipBit(GPR[R].value, i);
     }
-
-    if (R === '00') R0 = tR;
-    else if (R === '01') R1 = tR;
-    else if (R === '10') R2 = tR;
-    else if (R === '11') R3 = tR;
 }
 
 function LDX(I, IX, Address) {
@@ -194,9 +195,8 @@ function CMP(I, IX, R, Address) {
     getEA(I, IX, Address);
     readData();
     MBR = dataBus;
-    R = regRef(R);
     for (var i = 0; i < 16; i++) {
-        ZF = NOT(MBR[i] ^ R[i]) + '';
+        ZF = NOT(MBR[i] ^ GPR[R].value[i]) + '';
         if (ZF == 0) {
             CF = MBR[i] + '';
             break;
@@ -240,26 +240,12 @@ function signExtend(bstr) {
 
 //Register access
 
-function regRef(R) {
-    if (R === '00') R = R0;
-    else if (R === '01') R = R1;
-    else if (R === '10') R = R2;
-    else if (R === '11') R = R3;
-    return R;
-}
-
 function storeGPR(R) {
-    if (R === '00') dataBus = R0;
-    else if (R === '01') dataBus = R1;
-    else if (R === '10') dataBus = R2;
-    else if (R === '11') dataBus = R3;
+    dataBus = GPR[R].value;
 }
 
 function loadGPR(R) {
-    if (R === '00') R0 = dataBus;
-    else if (R === '01') R1 = dataBus;
-    else if (R === '10') R2 = dataBus;
-    else if (R === '11') R3 = dataBus;
+    GPR[R].value = dataBus;
 }
 
 //Update PC;
@@ -287,6 +273,6 @@ function sub(str1, str2) {
 
 }
 
-function replaceAt(string, index, replace) {
-  return string.substring(0, index) + replace + string.substring(index + 1);
+function flipBit(string, index) {
+    return string.substring(0, index) + NOT(string[index]) + string.substring(index + 1);
 }
