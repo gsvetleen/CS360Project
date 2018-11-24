@@ -230,8 +230,7 @@ function STR(I, IX, R, Address) {
 }
 
 function NOT(bit) {
-    if (bit == '0') return '1';
-    else return '0';
+    return bit ^= '1';
 }
 
 function signExtend(bstr) {

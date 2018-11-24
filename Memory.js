@@ -16,7 +16,7 @@ function generatedCode() {
 //Entries 33 - 1023 Variables
 //Entries 1024 - 2047 String Buffer
 
-var memory = [];
+var memory = {};
 
 //INSTRUCTION SPACE             OPCODEIXRRADRESS
 memory['00000000000'] = {value:'0000010000100000'};//LDR r0,62
