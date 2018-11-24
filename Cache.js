@@ -1,6 +1,6 @@
 var SIZE = 8;
-var ASSOCIATIVITY = 1;
-var SETS = 8;
+var ASSOCIATIVITY = 4;
+var SETS = 2;
 
 function BLOCK() {
     this.tag = '';
@@ -12,12 +12,11 @@ function BLOCK() {
 var TABLE = {};
 
 function makeBitStr(magnitude, length) {
-    if (length === 0) return '';
-    else return ('0'.repeat(length - (+magnitude).toString(2).length) + (+magnitude).toString(2));
+    //if (length === 0) return '';
+    return (+magnitude).toString(2).padStart(length, '0');
 }
 
 populateCache();
-console.log(TABLE);
 
 function populateCache() {
     TABLE.length = SETS;
@@ -35,20 +34,12 @@ function populateCache() {
     }
 }
 
-function setByValid() {
+function setByValid() {}
 
-}
+function setByLRU() {}
 
-function setByLRU() {
-
-}
-
-function getByTag(tag) {
-
-}
+function getByTag(tag) {}
 
 function getByAddress(index, offset) {}
-
-function FIFO() {}
 
 function writeThough() {}

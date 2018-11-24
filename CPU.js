@@ -234,7 +234,7 @@ function NOT(bit) {
 }
 
 function signExtend(bstr) {
-    return ('0'.repeat(16 - bstr.length) + bstr.toString(2));
+    return bstr.padStart(16, '0');
 }
 
 //Register access
