@@ -1,6 +1,9 @@
 var SIZE = 8;
-var ASSOCIATIVITY = 4;
-var SETS = 2;
+var ASSOCIATIVITY = 1;
+var SETS = 8;
+var ASL = 3;
+var SSL = 1;
+    
 
 function BLOCK() {
     this.tag = '';
@@ -16,17 +19,31 @@ function makeBitStr(magnitude, length) {
     return (+magnitude).toString(2).padStart(length, '0');
 }
 
-populateCache();
+function isPowOf2(str) {
+    return ((x != 0) && !(x & (x - 1)));
+}
+
+function warmup(words, words_per_set) {
+    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set < words)) 
+        return false;
+    SIZE = words;
+    ASSOCIATIVITY = words_per_set;
+    SETS = words/words_per_set;
+    ASL = Math.log2(words);
+	SSL = Math.log2(words_per_set);
+    populateCache();
+    return true;
+}
 
 function populateCache() {
     TABLE.length = SETS;
     for (var i = 0; i < SETS; i++) {
-        var setAddress = makeBitStr(i, Math.log2(SETS));
+        var setAddress = makeBitStr(i, SSL);
         TABLE[setAddress] = {
             value: {}
         };
         for (var j = 0; j < ASSOCIATIVITY; j++) {
-            var blockAddress = makeBitStr(j, Math.log2(ASSOCIATIVITY));
+            var blockAddress = makeBitStr(j, ASL);
             TABLE[setAddress].value[blockAddress] = {
                 value: new BLOCK()
             };
@@ -38,7 +55,13 @@ function setByValid() {}
 
 function setByLRU() {}
 
-function getByTag(tag) {}
+function getByTag(index, tag) {
+    var set = TABLE[index].value;
+    for (var i = 0; i < ASSOCIATIVITY; i++) {
+        if (set[makeBitStr(i, ASL)].value.tag == tag)
+            return set[makeBitStr(i, ASL)].value.WORD;
+    }
+}
 
 function getByAddress(index, offset) {}
 
