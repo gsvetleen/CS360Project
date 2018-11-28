@@ -1,21 +1,25 @@
 var SIZE = 8;
+//Words per Set
 var ASSOCIATIVITY = 1;
 var SETS = 8;
-var ASL = 3;
-var SSL = 1;
-    
+//Set size bit length
+var ASL = 0;
+//Index bit length
+var SSL = 3;
+var TABLE = {};
+
+console.log(populateCache(8, 2));
+console.log(TABLE);
 
 function BLOCK() {
-    this.tag = '';
     this.valid = '0';
-    this.WORD = '0000000000000000';
+    this.tag = '';
+    this.WORD = 'S';
     this.counter = 0;
 }
 
-var TABLE = {};
-
 function makeBitStr(magnitude, length) {
-    //if (length === 0) return '';
+    if (length === 0) return '';
     return (+magnitude).toString(2).padStart(length, '0');
 }
 
@@ -26,13 +30,13 @@ function isPowOf2(str) {
 function warmUp() {}
 
 function populateCache(words, words_per_set) {
-    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set < words) && words & words_per_set) 
+    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set <= words) && words & words_per_set) 
         return false;
     SIZE = words;
     ASSOCIATIVITY = words_per_set;
     SETS = words/words_per_set;
-    ASL = Math.log2(words);
-	SSL = Math.log2(words_per_set);
+    SSL = Math.log2(SETS);
+	ASL = Math.log2(words_per_set);
     setUpTable();
     return true;
 }
@@ -53,32 +57,42 @@ function setUpTable() {
     }
 }
 
-function setByValid() {}
+function getByValid(set) {}
 
-function setByLRU() {}
-
-function getByTag(tag, index) {
-    var set = TABLE[index].value;
-    for (var i = 0; i < ASSOCIATIVITY; i++) {
-        if (set[makeBitStr(i, ASL)].value.tag == tag)
-            return set[makeBitStr(i, ASL)].value.WORD;
+function getByLRU(set) {
+    var LRUBlock = set[makeBitStr(0, ASL)];
+    for(var i = 1; i < ASSOCIATIVITY; i++) {
+        if(set[makeBitStr(i-1, ASL)].value.counter < set[makeBitStr(i, ASL)].value.counter)
+            LRUBlock = set[makeBitStr(i, ASL)];
     }
-    return false;
+    return LRUBlock;
 }
 
-function getByAddress(tag, index, offset) {
-    if(TABLE[index].value[offset].value.tag == tag) {
-        return TABLE[index].value[offset].value.WORD;
-    }
-    return false;
-}
-
-function replaceBlock(index) {
-    
+function replaceBlock(tag, index, block) {
+    block.valid = '1';
+    block.tag = tag;
+    readData(tag+index);
+    block.counter = 0;
+    return block.WORD = dataBus;
 }
        
 function getData(address) {
+    var data = '';
+    var tag = address.substring(0, 17-SSL);
+    var index = address.substring(17-SSL, 17);
+    var set = TABLE[index].value;
+    var isFull = '1';
+    for (var i = 0; i < ASSOCIATIVITY; i++) {
+        isFull &= set[makeBitStr(i, ASL)].value.valid;
+        if (set[makeBitStr(i, ASL)].value.tag == tag & set[makeBitStr(i, ASL)].value.valid)
+            data = set[makeBitStr(i, ASL)].value.WORD;
+    }
     
+    if(!isFull)
+        data =  getByValid(set);
+    else if(!data)
+        data = getByLRU(set);
+    return data;
 }
 
 function writeThough() {}
