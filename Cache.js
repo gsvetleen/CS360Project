@@ -89,9 +89,9 @@ function getData(address) {
     }
     
     if(!isFull)
-        data =  getByValid(set);
+        data = replaceBlock(getByValid(set));
     else if(!data)
-        data = getByLRU(set);
+        data = replaceBlock(getByLRU(set));
     return data;
 }
 
