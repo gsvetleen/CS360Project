@@ -23,19 +23,21 @@ function isPowOf2(str) {
     return ((str != 0) && !(str & (str - 1)));
 }
 
-function warmup(words, words_per_set) {
-    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set < words)) 
+function warmUp() {}
+
+function populateCache(words, words_per_set) {
+    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set < words) && words & words_per_set) 
         return false;
     SIZE = words;
     ASSOCIATIVITY = words_per_set;
     SETS = words/words_per_set;
     ASL = Math.log2(words);
 	SSL = Math.log2(words_per_set);
-    populateCache();
+    setUpTable();
     return true;
 }
 
-function populateCache() {
+function setUpTable() {
     TABLE.length = SETS;
     for (var i = 0; i < SETS; i++) {
         var setAddress = makeBitStr(i, SSL);
@@ -55,14 +57,28 @@ function setByValid() {}
 
 function setByLRU() {}
 
-function getByTag(index, tag) {
+function getByTag(tag, index) {
     var set = TABLE[index].value;
     for (var i = 0; i < ASSOCIATIVITY; i++) {
         if (set[makeBitStr(i, ASL)].value.tag == tag)
             return set[makeBitStr(i, ASL)].value.WORD;
     }
+    return false;
 }
 
-function getByAddress(index, offset) {}
+function getByAddress(tag, index, offset) {
+    if(TABLE[index].value[offset].value.tag == tag) {
+        return TABLE[index].value[offset].value.WORD;
+    }
+    return false;
+}
+
+function replaceBlock(index) {
+    
+}
+       
+function getData(address) {
+    
+}
 
 function writeThough() {}

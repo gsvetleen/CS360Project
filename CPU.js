@@ -229,8 +229,8 @@ function STR(I, IX, R, Address) {
     writeData();
 }
 
-function NOT(bit) {
-    return bit ^= '1';
+function NOT(str) {
+    return str ^= '1';
 }
 
 function signExtend(bstr) {
