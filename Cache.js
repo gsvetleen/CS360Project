@@ -75,7 +75,7 @@ function getByLRU(set) {
     return LRUBlock;
 }
 
-function replaceBlock(tag, index, block) {
+function setBlock(tag, index, block) {
     block.valid = '1';
     block.tag = tag;
     block.counter = 0;
@@ -98,9 +98,9 @@ function getBlock() {
         }
     }
     if(!isFull)
-        return replaceBlock(tag, index, getByValid(set));
-    else if(!data)
-        return replaceBlock(tag, index, getByLRU(set));
+        return setBlock(tag, index, getByValid(set));
+    else
+        return setBlock(tag, index, getByLRU(set));
 }
 
 function write(){
