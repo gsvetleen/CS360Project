@@ -15,7 +15,7 @@ console.log(TABLE);
 function BLOCK() {
     this.valid = '0';
     this.tag = '';
-    this.WORD = 'S';
+    this.WORD = '';
     this.counter = 0;
 }
 
