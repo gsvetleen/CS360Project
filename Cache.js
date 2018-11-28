@@ -7,10 +7,11 @@ var ASL = 0;
 //Index bit length
 var SSL = 3;
 var TABLE = {};
+var HIT = 0;
+var MISS = 0;
+var REPLACE = 0;
 
 console.log(populateCache(8, 8));
-console.log(getData('0000000000000000'));
-console.log(TABLE);
 
 function BLOCK() {
     this.valid = '0';
@@ -27,8 +28,6 @@ function makeBitStr(magnitude, length) {
 function isPowOf2(str) {
     return ((str != 0) && !(str & (str - 1)));
 }
-
-function warmUp() {}
 
 function populateCache(words, words_per_set) {
     if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set <= words) && words & words_per_set) 
@@ -59,6 +58,7 @@ function setUpTable() {
 }
 
 function getByValid(set) {
+    MISS++;
     for (var i = 0; i < ASSOCIATIVITY; i++) {
         if (set[makeBitStr(i, ASL)].value.valid == '0')
             return set[makeBitStr(i, ASL)].value;
@@ -66,6 +66,7 @@ function getByValid(set) {
 }
 
 function getByLRU(set) {
+    REPLACE++;
     var LRUBlock = set[makeBitStr(0, ASL)];
     for(var i = 1; i < ASSOCIATIVITY; i++) {
         if(set[makeBitStr(i-1, ASL)].value.counter > set[makeBitStr(i, ASL)].value.counter)
@@ -79,28 +80,34 @@ function replaceBlock(tag, index, block) {
     block.tag = tag;
     block.counter = 0;
     readData(tag+index);
-    return block.WORD = dataBus;
+    block.WORD = dataBus;
+    return block;
 }
        
-function getData(address) {
-    var data = '';
-    var tag = address.substring(0, 16-SSL);
-    var index = address.substring(16-SSL, 17);
+function getBlock() {
+    var tag = addressBus.substring(0, 16-SSL);
+    var index = addressBus.substring(16-SSL, 17);
     var set = TABLE[index].value;
     var isFull = '1';
     for (var i = 0; i < ASSOCIATIVITY; i++) {
         isFull &= set[makeBitStr(i, ASL)].value.valid;
         if (set[makeBitStr(i, ASL)].value.tag == tag && set[makeBitStr(i, ASL)].value.valid) {
-            data = set[makeBitStr(i, ASL)].value.WORD;
+            HIT++;
             set[makeBitStr(i, ASL)].value.counter++;
+            return set[makeBitStr(i, ASL)].value;
         }
-            
     }
     if(!isFull)
-        data = replaceBlock(tag, index, getByValid(set));
+        return replaceBlock(tag, index, getByValid(set));
     else if(!data)
-        data = replaceBlock(tag, index, getByLRU(set));
-    return data;
+        return replaceBlock(tag, index, getByLRU(set));
 }
 
-function writeThough() {}
+function write(){
+    writeData();
+    getBlock().WORD = dataBus;
+}
+
+function read(){
+    dataBus = getBlock().WORD;
+}
