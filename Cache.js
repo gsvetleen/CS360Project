@@ -20,7 +20,7 @@ function makeBitStr(magnitude, length) {
 }
 
 function isPowOf2(str) {
-    return ((x != 0) && !(x & (x - 1)));
+    return ((str != 0) && !(str & (str - 1)));
 }
 
 function warmup(words, words_per_set) {
