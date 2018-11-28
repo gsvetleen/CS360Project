@@ -8,8 +8,9 @@ var ASL = 0;
 var SSL = 3;
 var TABLE = {};
 
-console.log(populateCache(8, 2));
+console.log(populateCache(8, 8));
 console.log(TABLE);
+console.log(getData('0000000000000000'));
 
 function BLOCK() {
     this.valid = '0';
@@ -76,26 +77,30 @@ function getByLRU(set) {
 function replaceBlock(tag, index, block) {
     block.valid = '1';
     block.tag = tag;
-    readData(tag+index);
     block.counter = 0;
+    readData(tag+index);
     return block.WORD = dataBus;
 }
        
 function getData(address) {
     var data = '';
-    var tag = address.substring(0, 17-SSL);
-    var index = address.substring(17-SSL, 17);
+    var tag = address.substring(0, 16-SSL);
+    var index = address.substring(16-SSL, 17);
+    console.log(17-SSL);
     var set = TABLE[index].value;
     var isFull = '1';
     for (var i = 0; i < ASSOCIATIVITY; i++) {
         isFull &= set[makeBitStr(i, ASL)].value.valid;
-        if (set[makeBitStr(i, ASL)].value.tag == tag && set[makeBitStr(i, ASL)].value.valid)
+        if (set[makeBitStr(i, ASL)].value.tag == tag && set[makeBitStr(i, ASL)].value.valid) {
             data = set[makeBitStr(i, ASL)].value.WORD;
+            set[makeBitStr(i, ASL)].value.counter++;
+        }
+            
     }
     if(!isFull)
-        data = replaceBlock(getByValid(set));
+        data = replaceBlock(tag, index, getByValid(set));
     else if(!data)
-        data = replaceBlock(getByLRU(set));
+        data = replaceBlock(tag, index, getByLRU(set));
     return data;
 }
 
