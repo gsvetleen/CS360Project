@@ -57,13 +57,18 @@ function setUpTable() {
     }
 }
 
-function getByValid(set) {}
+function getByValid(set) {
+    for (var i = 0; i < ASSOCIATIVITY; i++) {
+        if (set[makeBitStr(i, ASL)].value.valid == '0')
+            return set[makeBitStr(i, ASL)].value;
+    }
+}
 
 function getByLRU(set) {
     var LRUBlock = set[makeBitStr(0, ASL)];
     for(var i = 1; i < ASSOCIATIVITY; i++) {
-        if(set[makeBitStr(i-1, ASL)].value.counter < set[makeBitStr(i, ASL)].value.counter)
-            LRUBlock = set[makeBitStr(i, ASL)];
+        if(set[makeBitStr(i-1, ASL)].value.counter > set[makeBitStr(i, ASL)].value.counter)
+            LRUBlock = set[makeBitStr(i, ASL)].value;
     }
     return LRUBlock;
 }
@@ -84,10 +89,9 @@ function getData(address) {
     var isFull = '1';
     for (var i = 0; i < ASSOCIATIVITY; i++) {
         isFull &= set[makeBitStr(i, ASL)].value.valid;
-        if (set[makeBitStr(i, ASL)].value.tag == tag & set[makeBitStr(i, ASL)].value.valid)
+        if (set[makeBitStr(i, ASL)].value.tag == tag && set[makeBitStr(i, ASL)].value.valid)
             data = set[makeBitStr(i, ASL)].value.WORD;
     }
-    
     if(!isFull)
         data = replaceBlock(getByValid(set));
     else if(!data)
