@@ -11,8 +11,6 @@ var HIT = 0;
 var MISS = 0;
 var REPLACE = 0;
 
-console.log(populateCache(8, 8));
-
 function BLOCK() {
     this.valid = '0';
     this.tag = '';
@@ -30,7 +28,7 @@ function isPowOf2(str) {
 }
 
 function populateCache(words, words_per_set) {
-    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set <= words) && words & words_per_set) 
+    if(!(isPowOf2(words) && isPowOf2(words_per_set) && words_per_set <= words && words >= 1 && words_per_set >= 1)) 
         return false;
     SIZE = words;
     ASSOCIATIVITY = words_per_set;
@@ -66,6 +64,7 @@ function getByValid(set) {
 }
 
 function getByLRU(set) {
+    MISS++;
     REPLACE++;
     var LRUBlock = set[makeBitStr(0, ASL)];
     for(var i = 1; i < ASSOCIATIVITY; i++) {

@@ -3,6 +3,7 @@ var regFile = document.getElementsByClassName('regfile')[0];
 
 //Populate Registers/RAM on Load
 (function(){
+    populateCache(8,8);
 	updateRegisters();
     for(var i = 0; i < 2048; i++){
 		var row = memTable.insertRow(-1);
