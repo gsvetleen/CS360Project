@@ -9,8 +9,8 @@ var SSL = 3;
 var TABLE = {};
 
 console.log(populateCache(8, 8));
-console.log(TABLE);
 console.log(getData('0000000000000000'));
+console.log(TABLE);
 
 function BLOCK() {
     this.valid = '0';
@@ -86,7 +86,6 @@ function getData(address) {
     var data = '';
     var tag = address.substring(0, 16-SSL);
     var index = address.substring(16-SSL, 17);
-    console.log(17-SSL);
     var set = TABLE[index].value;
     var isFull = '1';
     for (var i = 0; i < ASSOCIATIVITY; i++) {
