@@ -22,6 +22,10 @@ function updateCache() {
     
 }
 
+function setStatus(msg) {
+    document.getElementById('status').innerHTML = msg;
+}
+
 function updateMemory() {
     for(var i = 0; i < 2048; i++){
 		var row = memTable.rows[i];

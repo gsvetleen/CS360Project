@@ -70,7 +70,7 @@
         <table>
         </table>
         <br>
-        <table style="width:100%" class="cache">
+        <table style="width:100%">
             <caption>Cache</caption>
             <tr>
                 <th>Tag</th>
@@ -80,10 +80,10 @@
             </tr>
 
             <tr>
-                <td>0000000000000000</td>
-                <td>-</td>
-                <td>0</td>
-                <td>0000000000000000</td>
+                <td id='tag'>0000000000000000</td>
+                <td id='index'>-</td>
+                <td id='valid'>0</td>
+                <td id='data'>0000000000000000</td>
             </tr>
         </table>
         <br>
@@ -94,20 +94,16 @@
                 <th>Blocks per Set</th>
                 <th>Words per Block</th>
             </tr>
-
             <tr>
-                <td>1</td>
-                <td>1</td>
-                <td>1</td>
+                <td><span id='sets' contenteditable>1</span></td>
+                <td><span id='blocks' contenteditable>1</span></td>
+                <td><span id='words' contenteditable>1</span></td>
             </tr>
-
-
             <tr>
                 <th>Hits</th>
                 <th>Misses</th>
                 <th>Replaces</th>
             </tr>
-
             <tr>
                 <td>0</td>
                 <td>0</td>
@@ -124,7 +120,7 @@
         <button onclick='step();'>STEP</button>
         <button onclick='step();'>SET CACHE</button>
         <button onclick='location.reload()'>RESET</button>
-        <text>Machine Ready</text>
+        <text id='status'>Machine Ready</text>
     </div>
 
 </body>

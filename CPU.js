@@ -35,11 +35,15 @@ function cycle() {
 }
 
 function step() {
-    if (PC === '0000000000000110') return;
+    if (PC === '0000000000000110') {
+        setStatus('Machine Halted');
+        return;
+    }
     fetch();
     decode();
     updateRegisters();
     updateMemory();
+    setStatus('Stepping');
 }
 
 function decode() {

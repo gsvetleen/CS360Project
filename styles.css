@@ -25,23 +25,3 @@ table, th, td {
     width: 100%;
     table-layout : fixed;
 }
-
-
-input {
-  border: none;
-  width: 24ch;
-  background: 
-    repeating-linear-gradient(90deg, 
-        dimgrey 0, 
-        dimgrey 1ch, 
-        transparent 0, 
-        transparent 1.5ch) 
-      0 100%/100% 2px no-repeat;
-  color: dimgrey;
-  font: 2ch consolas, monospace;
-  letter-spacing: .5ch;
-}
-input:focus {
-  outline: none;
-  color: dodgerblue;
-}
