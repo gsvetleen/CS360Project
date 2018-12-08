@@ -15,8 +15,7 @@ var regFile = document.getElementsByClassName('regfile')[0];
         readData();
         cell2.innerHTML = dataBus; 
     }
-    populateCache(4,4,2);
-    console.log(TABLE);
+    populateCache(1,1,1);
 })();
 
 function updateCache() {

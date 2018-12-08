@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
     <table class='memth'>
         <caption>Memory</caption>
         <tr>
@@ -19,12 +18,10 @@
             <th>Word</th>
         </tr>
     </table>
-
     <div class='memtrc'>
         <table class='memt'>
         </table>
     </div>
-
     <br>
     <div>
         <table style="width:100%" class="regfile">
@@ -70,13 +67,54 @@
                 <td></td>
             </tr>
         </table>
-        
         <table>
-            
         </table>
-
         <br>
-        
+        <table style="width:100%" class="cache">
+            <caption>Cache</caption>
+            <tr>
+                <th>Tag</th>
+                <th>Index</th>
+                <th>Valid Bit</th>
+                <th>Data</th>
+            </tr>
+
+            <tr>
+                <td>0000000000000000</td>
+                <td>-</td>
+                <td>0</td>
+                <td>0000000000000000</td>
+            </tr>
+        </table>
+        <br>
+        <table style="width:100%">
+            <caption>Cache Properties</caption>
+            <tr>
+                <th>Sets in Cache</th>
+                <th>Blocks per Set</th>
+                <th>Words per Block</th>
+            </tr>
+
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+            </tr>
+
+
+            <tr>
+                <th>Hits</th>
+                <th>Misses</th>
+                <th>Replaces</th>
+            </tr>
+
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <br>
         <script src="CPU.js"></script>
         <script src="Bus.js"></script>
         <script src="Memory.js"></script>
@@ -84,7 +122,9 @@
         <script src="IO.js"></script>
         <button onclick='cycle();'>CYCLE</button>
         <button onclick='step();'>STEP</button>
+        <button onclick='step();'>SET CACHE</button>
         <button onclick='location.reload()'>RESET</button>
+        <text>Machine Ready</text>
     </div>
 
 </body>

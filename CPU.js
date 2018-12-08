@@ -26,18 +26,16 @@ function fetch() {
     addressBus = PC;
     read();
     IR = dataBus;
-    console.log(HIT + ' ' + MISS + ' ' + REPLACE);
 }
 
 //STEP
 function cycle() {
-    if (PC === '0000000000000110') return;
 	step();
     setTimeout(cycle, 100);
 }
 
 function step() {
-    if (PC === '0000000000011111') return;
+    if (PC === '0000000000000110') return;
     fetch();
     decode();
     updateRegisters();
