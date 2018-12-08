@@ -26,16 +26,14 @@ function fetch() {
     addressBus = PC;
     read();
     IR = dataBus;
+    console.log(HIT + ' ' + MISS + ' ' + REPLACE);
 }
 
 //STEP
 function cycle() {
     if (PC === '0000000000000110') return;
-    fetch();
-    decode();
-    updateRegisters();
-    updateMemory();
-    setTimeout(cycle, 1);
+	step();
+    setTimeout(cycle, 100);
 }
 
 function step() {
@@ -98,32 +96,32 @@ function DEC(R) {
 
 function LDX(I, IX, Address) {
     getEA(I, IX, Address);
-    read();
+    readData();
     X0 = dataBus;
 }
 
 function STX(I, IX, Address) {
     getEA(I, IX, Address);
     dataBus = X0;
-    write();
+    writeData();
 }
 
 function LDR(I, IX, R, Address) {
     getEA(I, IX, Address);
-    read();
+    readData();
     loadGPR(R);
 }
 
 function STR(I, IX, R, Address) {
     getEA(I, IX, Address);
     storeGPR(R);
-    write();
+    writeData();
 }
 
 function JE(I, IX, Address) {
     if (ZF === '1') {
         getEA(I, IX, Address);
-        read();
+        readData();
         PC = dataBus;
     } else uPC();
 }
@@ -131,7 +129,7 @@ function JE(I, IX, Address) {
 function JNE(I, IX, Address) {
     if (ZF === '0') {
         getEA(I, IX, Address);
-        read();
+        readData();
         PC = dataBus;
     } else uPC();
 }
@@ -139,7 +137,7 @@ function JNE(I, IX, Address) {
 function JG(I, IX, Address) {
     if (ZF === '0' && SF === '0') {
         getEA(I, IX, Address);
-        read();
+        readData();
         PC = dataBus;
     } else uPC();
 }
@@ -147,7 +145,7 @@ function JG(I, IX, Address) {
 function JGE(I, IX, Address) {
     if (ZF === '1' || SF === '0') {
         getEA(I, IX, Address);
-        read();
+        readData();
         PC = dataBus;
     } else uPC();
 }
@@ -155,7 +153,7 @@ function JGE(I, IX, Address) {
 function JL(I, IX, Address) {
     if (SF === '1') {
         getEA(I, IX, Address);
-        read();
+        readData();
         PC = dataBus;
     } else uPC();
 }
@@ -163,14 +161,14 @@ function JL(I, IX, Address) {
 function JLE(I, IX, Address) {
     if (ZF === '1' || SF === '1') {
         getEA(I, IX, Address);
-        read();
+        readData();
         PC = dataBus;
     } else uPC();
 }
 
 function JUMP(I, IX, Address) {
     getEA(I, IX, Address);
-    read();
+    readData();
     PC = dataBus;
 }
 
@@ -178,7 +176,7 @@ function JUMP(I, IX, Address) {
 function getEA(I, IX, Address) {
     if (I === '1') {
         addressBus = signExtend(Address);
-        read();
+        readData();
         MAR = dataBus;
     } else MAR = signExtend(Address);
 
@@ -193,7 +191,7 @@ function CMP(I, IX, R, Address) {
     CF = '0';
     SF = '0';
     getEA(I, IX, Address);
-    read();
+    readData();
     MBR = dataBus;
     for (var i = 0; i < 16; i++) {
         ZF = NOT(MBR[i] ^ GPR[R].value[i]) + '';
@@ -207,7 +205,7 @@ function CMP(I, IX, R, Address) {
 
 function LDX(I, IX, Address) {
     getEA(I, IX, Address);
-    read();
+    readData();
     X0 = dataBus;
 }
 
@@ -219,14 +217,14 @@ function STX(I, IX, Address) {
 
 function LDR(I, IX, R, Address) {
     getEA(I, IX, Address);
-    read();
+    readData();
     loadGPR(R);
 }
 
 function STR(I, IX, R, Address) {
     getEA(I, IX, Address);
     storeGPR(R);
-    write();
+    writeData();
 }
 
 function NOT(str) {
