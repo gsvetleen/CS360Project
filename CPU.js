@@ -30,6 +30,7 @@ function fetch() {
 
 //STEP
 function cycle() {
+    setStatus('Cycling');
 	step();
     setTimeout(cycle, 100);
 }
@@ -43,7 +44,7 @@ function step() {
     decode();
     updateRegisters();
     updateMemory();
-    setStatus('Stepping');
+    updateCache();
 }
 
 function decode() {

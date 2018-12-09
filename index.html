@@ -70,20 +70,13 @@
         <table>
         </table>
         <br>
-        <table style="width:100%">
+        <table id='lines' style="width:100%">
             <caption>Cache</caption>
             <tr>
                 <th>Tag</th>
                 <th>Index</th>
                 <th>Valid Bit</th>
                 <th>Data</th>
-            </tr>
-
-            <tr>
-                <td id='tag'>0000000000000000</td>
-                <td id='index'>-</td>
-                <td id='valid'>0</td>
-                <td id='data'>0000000000000000</td>
             </tr>
         </table>
         <br>
@@ -105,9 +98,9 @@
                 <th>Replaces</th>
             </tr>
             <tr>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
+                <td id='hits'>0</td>
+                <td id='misses'>0</td>
+                <td id='replaces'>0</td>
             </tr>
         </table>
         <br>
@@ -118,7 +111,7 @@
         <script src="IO.js"></script>
         <button onclick='cycle();'>CYCLE</button>
         <button onclick='step();'>STEP</button>
-        <button onclick='step();'>SET CACHE</button>
+        <button onclick='setCache();'>SET CACHE</button>
         <button onclick='location.reload()'>RESET</button>
         <text id='status'>Machine Ready</text>
     </div>
